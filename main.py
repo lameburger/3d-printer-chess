@@ -7,6 +7,8 @@ import tkinter as tk
 from stockfish import Stockfish
 import time
 
+# run M211 S0 and M302 P1 in the terminal before running file
+
 def center(frame):
     image = cv2.imread(frame)
 
@@ -84,7 +86,11 @@ def main():
 
     for i in range(0, 8, 1):
         for j in range(0, 8, 1):
-            fen_mat[i][j] = letters[7-i] + str(abs(j-8))
+            fen_mat[i][j] = letters[abs(0-j)] + str(abs(8-i))
+    
+    print(fen_mat)
+
+    o.home()
 
     updated_mat = np.zeros((8,8),dtype=object)
     board = chess.Board()
@@ -107,6 +113,7 @@ def main():
     print("grabbing image of board")
 
     while not board.is_game_over():
+        o.home()
         def button_click():
             print("Move recognized")
             #updated_mat = image_warp('')
@@ -183,15 +190,30 @@ def main():
         print("old:", stockfishOld, "new:", stockfishNew)
 
         #  makes move based off occupancy of square
+        remove = False
         x = 0
         for i in range(0,8,1):
             for j in range(0,8,1):
                 if stockfishNew == x:
                     if updated_mat[i][j] == "e":
-                        o.move(all_centers[0][stockfishOld][0], all_centers[0][stockfishOld][1],all_centers[0][stockfishNew][0], all_centers[0][stockfishNew][1])
-                    if updated_mat[i][j] == "O":
-                        o.remove(all_centers[0][x][0], all_centers[0][x][1],all_centers[0][stockfishNew][0], all_centers[0][stockfishNew][1])
+                        remove = False
+                        break
+                    elif updated_mat[i][j] == "O":
+                        remove = True
+                        break           
+                else: x += 1
         
+        if remove == False:
+            o.move(all_centers[0][stockfishOld][0]+5, all_centers[0][stockfishOld][1],all_centers[0][stockfishNew][0]+5, all_centers[0][stockfishNew][1])
+            print("moving piece...")
+        else:
+            o.remove(all_centers[0][x][0]+5, all_centers[0][x][1],all_centers[0][stockfishNew][0]+5, all_centers[0][stockfishNew][1])
+            print("removing piece...")
+
+
+
+        initial_mat = updated_mat
+    
         print(board)
         print("-----------------")
 

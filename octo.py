@@ -3,7 +3,7 @@ import time
 
 class Octoprint:
 
-    def __init__(self, host='http://octopi.local/', api_key='32DD4FE6441E4F3ABF70D0AB42F98F25'):
+    def __init__(self, host='http://192.168.86.73', api_key='2F1129DB154543BAB9E4453057B6DD07'):
         self.base_url = host
         self.api_key = api_key
         self.printhead = self.base_url + '/api/printer/printhead'
@@ -12,12 +12,13 @@ class Octoprint:
 
     def home(self):
         command = {'command': 'jog',
-                'x': 230,
+                'x': 250,
                 'y': 220,
-                'z': 100,
+                'z': 90,
                 'speed': 20000,
                 'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
+
         print('sent homing command')
         
 
@@ -25,7 +26,7 @@ class Octoprint:
         command = {'command': 'jog',
                     'x': old_x,
                     'y': old_y,
-                    'z': 100,
+                    'z': 60,
                     'speed': 20000,
                     'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
@@ -38,11 +39,12 @@ class Octoprint:
         }
         r = requests.post(self.printhead, headers=self.headers, json=command)
 
-        # close extruder
+        command = {'command': 'extrude', 'amount': 22}
+        r = requests.post(self.extruder, headers=self.headers, json=command)
 
         command = {
             'command': 'jog',
-            'z': 100,
+            'z': 60,
             'speed': 50000,
             'absolute': True
         }
@@ -51,7 +53,7 @@ class Octoprint:
         command = {'command': 'jog',
                     'x': new_x,
                     'y': new_y,
-                    'z': 100,
+                    'z': 60,
                     'speed': 20000,
                     'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
@@ -64,11 +66,12 @@ class Octoprint:
         }
         r = requests.post(self.printhead, headers=self.headers, json=command)
 
-        # open extruder
+        command = {'command': 'extrude', 'amount': -22}
+        r = requests.post(self.extruder, headers=self.headers, json=command)
 
         command = {
             'command': 'jog',
-            'z': 100,
+            'z': 60,
             'speed': 50000,
             'absolute': True
         }
@@ -80,7 +83,7 @@ class Octoprint:
         command = {'command': 'jog',
                 'x': old_x,
                 'y': old_y,
-                'z': 100,
+                'z': 60,
                 'speed': 20000,
                 'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
@@ -93,11 +96,12 @@ class Octoprint:
         }
         r = requests.post(self.printhead, headers=self.headers, json=command)
 
-        # close
+        command = {'command': 'extrude', 'amount': 22}
+        r = requests.post(self.extruder, headers=self.headers, json=command)
 
         command = {
             'command': 'jog',
-            'z': 100,
+            'z': 60,
             'speed': 50000,
             'absolute': True
         }
@@ -106,17 +110,18 @@ class Octoprint:
         command = {'command': 'jog',
                 'x': 230,
                 'y': 220,
-                'z': 100,
+                'z': 60,
                 'speed': 20000,
                 'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
 
-        # open
+        command = {'command': 'extrude', 'amount': -22}
+        r = requests.post(self.extruder, headers=self.headers, json=command)
 
         command = {'command': 'jog',
             'x': new_x,
             'y': new_y,
-            'z': 100,
+            'z': 60,
             'speed': 20000,
             'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
@@ -129,11 +134,12 @@ class Octoprint:
         }
         r = requests.post(self.printhead, headers=self.headers, json=command)
 
-        # close
+        command = {'command': 'extrude', 'amount': 22}
+        r = requests.post(self.extruder, headers=self.headers, json=command)
 
         command = {
             'command': 'jog',
-            'z': 100,
+            'z': 60,
             'speed': 50000,
             'absolute': True
         }
@@ -142,7 +148,7 @@ class Octoprint:
         command = {'command': 'jog',
             'x': old_x,
             'y': old_y,
-            'z': 100,
+            'z': 60,
             'speed': 20000,
             'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
@@ -155,10 +161,11 @@ class Octoprint:
         }
         r = requests.post(self.printhead, headers=self.headers, json=command)
 
-        # open
+        command = {'command': 'extrude', 'amount': -22}
+        r = requests.post(self.extruder, headers=self.headers, json=command)
 
         command = {'command': 'jog',
-            'z': 100,
+            'z': 60,
             'speed': 20000,
             'absolute': True }
         r = requests.post(self.printhead, headers=self.headers, json=command)
@@ -166,8 +173,17 @@ class Octoprint:
         self.home()
     
     def test(self):
-        command = {'command': 'extrude', 'amount': 1}
+        command = {'command': 'extrude', 'amount': -22}
         r = requests.post(self.extruder, headers=self.headers, json=command)
+        # command = {'command': 'extrude', 'amount': dis}
+        # r = requests.post(self.extruder, headers=self.headers, json=command)
+        # command = {'command': 'jog',
+        #     'x': 200,
+        #     'y': 200,
+        #     'z': 45,
+        #     'speed': 200,
+        #     'absolute': True }
+        r = requests.post(self.printhead, headers=self.headers, json=command)
 
 
 

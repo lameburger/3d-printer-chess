@@ -6,12 +6,14 @@ import imutils
 def image_warp(name):
     frame = cv2.imread(name)
         
-    x1 = 491
-    x2 = 1400
-    y1 = 30
+    x1 = 520
+    x2 = 1399
+    y1 = 53
     y2 = 920
 
     frame = frame[y1:y2, x1:x2]
+
+    cv2.imwrite('test.png', frame)
 
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     img_blurred = cv2.GaussianBlur(gray_frame, (5, 5), 1)
@@ -46,7 +48,7 @@ def image_warp(name):
 
     frame = cv2.warpPerspective(frame,matrix,(width,height))
 
-    rotate_vertical = imutils.rotate(frame, angle=180)
+    rotate_vertical = imutils.rotate(frame, angle=270)
     rotate_horizontal = cv2.flip(rotate_vertical, 1)
 
     cv2.imwrite('images/warped.png', rotate_horizontal)
@@ -70,6 +72,8 @@ def image_warp(name):
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.1)
     global corners
     corners = cv2.cornerSubPix(gray,np.float32(centroids),(5,5),(-1,-1),criteria)
+
+    cv2.imwrite('all-points.png',frame)
 
     return square_detection()
 
@@ -133,8 +137,20 @@ def color_detection(x1, x2, y1, y2):
     lower_purple = (120, 50, 50)
     upper_purple = (150, 255, 255)
 
-    # Threshold the HSV image to get only purple colors
-    mask = cv2.inRange(hsv, lower_purple, upper_purple)
+    # Define the range of red color in HSV
+    lower_red1 = (0, 50, 50)
+    upper_red1 = (10, 255, 255)
+    lower_red2 = (170, 50, 50)
+    upper_red2 = (180, 255, 255)
+
+    # Threshold the HSV image to get purple and red colors
+    mask_purple = cv2.inRange(hsv, lower_purple, upper_purple)
+    mask_red1 = cv2.inRange(hsv, lower_red1, upper_red1)
+    mask_red2 = cv2.inRange(hsv, lower_red2, upper_red2)
+
+    # Combine the masks for purple and red colors
+    mask = cv2.bitwise_or(mask_purple, mask_red1)
+    mask = cv2.bitwise_or(mask, mask_red2)
 
     # cv2.imshow('yes',new_frame)
     # cv2.waitKey(0)
@@ -145,7 +161,7 @@ def color_detection(x1, x2, y1, y2):
         return "o"
     else:
         return "e"
-        
+
 def square_detection():
     x_arr = board_array_creation(True)
     y_arr = board_array_creation(False)
@@ -169,3 +185,18 @@ def square_detection():
     print(board_mat)
     print("-------------------------------------")
     return board_mat
+
+cap = cv2.VideoCapture(0)
+
+while(True):
+    ret, frame = cap.read()
+
+    if ret:
+        break
+
+    else:
+        print("No images detected!")
+
+cv2.imwrite('images/capture.png', frame)
+
+image_warp('images/capture.png')
